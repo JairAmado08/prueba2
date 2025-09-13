@@ -85,7 +85,6 @@ def set_bg():
             padding-top: 0px !important;
             padding-bottom: 0px !important;
         }}
-        /* Opciones radio deshabilitadas */
         input[type="radio"]:disabled + label {{
             color: gray;
         }}
@@ -107,26 +106,8 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # Bloque introductorio para preparar al usuario
-    st.markdown(
-        """
-        <div class="intro-card">
-            <h2 style="text-align:center; color:#333;">Prepárate para el Quiz</h2>
-            <p>
-                Las licencias MIT y BSD son licencias de software de código abierto muy populares y flexibles. 
-                Permiten a los desarrolladores usar, copiar, modificar y distribuir software con muy pocas restricciones, 
-                fomentando la colaboración y el uso libre del código. La licencia MIT es conocida por su simplicidad, 
-                mientras que BSD tiene varias variantes, algunas con cláusulas específicas que deben respetarse.
-            </p>
-            <p>
-                Este quiz te ayudará a comprender mejor las características principales de estas licencias y su importancia 
-                en el mundo del software abierto. ¡Buena suerte!
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    if "show_intro" not in st.session_state:
+        st.session_state.show_intro = True
     if "score" not in st.session_state:
         st.session_state.score = 0
     if "q_index" not in st.session_state:
@@ -137,6 +118,35 @@ def main():
         st.session_state.selected_option_idx = None
     if "score_added" not in st.session_state:
         st.session_state.score_added = False
+
+    if st.session_state.show_intro:
+        st.markdown(
+            """
+            <div class="intro-card">
+                <h2 style="text-align:center; color:#333;">Prepárate para el Quiz</h2>
+                <p>
+                    Las licencias MIT y BSD son licencias de software de código abierto muy populares y flexibles. 
+                    Permiten a los desarrolladores usar, copiar, modificar y distribuir software con muy pocas restricciones, 
+                    fomentando la colaboración y el uso libre del código. La licencia MIT es conocida por su simplicidad, 
+                    mientras que BSD tiene varias variantes, algunas con cláusulas específicas que deben respetarse.
+                </p>
+                <p>
+                    Este quiz te ayudará a comprender mejor las características principales de estas licencias y su importancia 
+                    en el mundo del software abierto. ¡Buena suerte!
+                </p>
+                <div style="text-align:center;">
+                    <button style="font-size:18px; padding:10px 25px; border-radius:10px; background-color:#1E90FF; color:white; border:none; cursor:pointer;" 
+                        onclick="window.dispatchEvent(new Event('streamlit:rerun'));">
+                        Empezar quiz
+                    </button>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("▶️ Empezar quiz"):
+            st.session_state.show_intro = False
+        return
 
     q_index = st.session_state.q_index
 
@@ -157,6 +167,7 @@ def main():
             st.session_state.answered = False
             st.session_state.selected_option_idx = None
             st.session_state.score_added = False
+            st.session_state.show_intro = True
         return
 
     question = questions[q_index]
