@@ -53,24 +53,16 @@ def set_bg():
             border-radius: 20px;
             box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.7);
             max-width: 700px;
-            margin: 40px auto 40px auto;
+            margin: 20px auto 40px auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #111;
             text-align: center;
         }}
-        .btn-next {{
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }}
-        .btn-next:hover {{
-            background-color: #45a049;
+        /* Opcional: quitar fondo blanco del contenedor principal para evitar espacios */
+        .block-container {{
+            background-color: transparent !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
         }}
         </style>
         """,
@@ -80,16 +72,18 @@ def set_bg():
 def main():
     set_bg()
 
+    # Título y línea divisoria fuera del cuadro pregunta
     st.markdown(
         """
         <h1 style="text-align:center; color:#FFFAF0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD
         </h1>
-        <hr style="border: 2px solid #FFFAF0; border-radius: 5px;">
+        <hr style="border: 2px solid #FFFAF0; border-radius: 5px; max-width: 700px; margin:auto;">
         """,
         unsafe_allow_html=True,
     )
 
+    # Inicialización estado
     if "score" not in st.session_state:
         st.session_state.score = 0
     if "q_index" not in st.session_state:
@@ -103,6 +97,7 @@ def main():
 
     q_index = st.session_state.q_index
 
+    # Fin del quiz
     if q_index >= len(questions):
         st.balloons()
         st.markdown(
@@ -124,6 +119,7 @@ def main():
 
     question = questions[q_index]
 
+    # Cuadro de pregunta
     st.markdown(f'<div class="question-card">', unsafe_allow_html=True)
     st.markdown(f'<h3 style="color:#333;">Pregunta {q_index + 1} de {len(questions)}</h3>', unsafe_allow_html=True)
     st.markdown(f'<p style="font-weight:bold; color:#111; font-size:20px;">{question["question"]}</p>', unsafe_allow_html=True)
