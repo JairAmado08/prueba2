@@ -1,5 +1,8 @@
 import streamlit as st
 
+# URL de una imagen de fondo libre (puedes cambiar por la tuya)
+BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80"
+
 questions = [
     {
         "question": "¿Cuál es una característica principal de la licencia MIT?",
@@ -33,8 +36,57 @@ questions = [
     }
 ]
 
+def set_bg():
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("{BACKGROUND_IMAGE}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        .question-card {{
+            background: rgba(255, 255, 255, 0.85);
+            padding: 25px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            max-width: 700px;
+            margin: 30px auto 30px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }}
+        .btn-next {{
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }}
+        .btn-next:hover {{
+            background-color: #45a049;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 def main():
-    st.title("📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD")
+    set_bg()
+
+    st.markdown(
+        """
+        <h1 style="text-align:center; color:#FFFAF0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD
+        </h1>
+        <hr style="border: 2px solid #FFFAF0; border-radius: 5px;">
+        """,
+        unsafe_allow_html=True,
+    )
 
     if "score" not in st.session_state:
         st.session_state.score = 0
@@ -53,12 +105,14 @@ def main():
         st.balloons()
         st.markdown(
             f"""
-            <h2 style="color:green;">🎉 ¡Has completado el quiz!</h2>
-            <h3 style="color:blue;">Tu puntuación final es: <strong>{st.session_state.score} puntos</strong></h3>
+            <div class="question-card" style="text-align:center;">
+                <h2 style="color:#2E8B57;">🎉 ¡Has completado el quiz!</h2>
+                <h3 style="color:#1E90FF;">Tu puntuación final es: <strong>{st.session_state.score} puntos</strong></h3>
+            </div>
             """,
             unsafe_allow_html=True,
         )
-        if st.button("Reiniciar quiz"):
+        if st.button("🔄 Reiniciar quiz"):
             st.session_state.score = 0
             st.session_state.q_index = 0
             st.session_state.answered = False
@@ -68,13 +122,24 @@ def main():
 
     question = questions[q_index]
 
-    st.write(f"Pregunta {q_index + 1} de {len(questions)}")
+    st.markdown(f'<div class="question-card">', unsafe_allow_html=True)
+    st.markdown(
+        f'<h3 style="color:#333;">Pregunta {q_index + 1} de {len(questions)}</h3>',
+        unsafe_allow_html=True,
+    )
 
     if not st.session_state.answered:
         with st.form(key="quiz_form"):
-            selected = st.radio(question["question"], question["options"])
-            submit = st.form_submit_button("Enviar respuesta")
-
+            selected = st.radio(
+                f'<b style="color:#111;">{question["question"]}</b>',
+                question["options"],
+                key="radio",
+                format_func=lambda x: x,
+            )
+            submit = st.form_submit_button(
+                label="Enviar respuesta",
+                help="Selecciona una opción y envíala",
+            )
             if submit:
                 st.session_state.selected_option_idx = question["options"].index(selected)
                 st.session_state.answered = True
@@ -82,19 +147,28 @@ def main():
 
                 if st.session_state.selected_option_idx == question["answer"]:
                     st.session_state.score += 10
-                    st.success("¡Correcto! Has ganado 10 puntos.")
+                    st.success("✅ ¡Correcto! Has ganado 10 puntos.")
                 else:
-                    st.error("Respuesta incorrecta.")
+                    st.error("❌ Respuesta incorrecta.")
 
-                st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
-
+                st.markdown(
+                    f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
+                    unsafe_allow_html=True,
+                )
     else:
-        # Mostrar la respuesta elegida sin opción de cambiar
-        st.write(f"Tu respuesta: **{question['options'][st.session_state.selected_option_idx]}**")
-        st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+        st.markdown(
+            f"<p><b>Tu respuesta:</b> {question['options'][st.session_state.selected_option_idx]}</p>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if st.session_state.show_next_button:
-        if st.button("Siguiente pregunta"):
+        if st.button("Siguiente pregunta", key="next_btn"):
             st.session_state.q_index += 1
             st.session_state.answered = False
             st.session_state.selected_option_idx = None
