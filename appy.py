@@ -1,7 +1,9 @@
 import streamlit as st
 
+# Imagen de fondo
 BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80"
 
+# Preguntas
 questions = [
     {
         "question": "¿Cuál es una característica principal de la licencia MIT?",
@@ -35,6 +37,7 @@ questions = [
     }
 ]
 
+# Estilos visuales
 def set_bg():
     st.markdown(
         f"""
@@ -47,34 +50,21 @@ def set_bg():
             background-attachment: fixed;
         }}
         .question-card {{
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.92);
             padding: 25px 40px;
             border-radius: 15px;
             box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.5);
             max-width: 700px;
-            margin: 30px auto 30px auto;
+            margin: 30px auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #111;
-        }}
-        .btn-next {{
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }}
-        .btn-next:hover {{
-            background-color: #45a049;
         }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+# Lógica principal
 def main():
     set_bg()
 
@@ -88,6 +78,7 @@ def main():
         unsafe_allow_html=True,
     )
 
+    # Estado de la app
     if "score" not in st.session_state:
         st.session_state.score = 0
     if "q_index" not in st.session_state:
@@ -101,9 +92,74 @@ def main():
 
     q_index = st.session_state.q_index
 
+    # Mostrar resultado final
     if q_index >= len(questions):
         st.balloons()
         st.markdown(
             f"""
             <div class="question-card" style="text-align:center;">
-                <h2 style="color:#2E8B57;">🎉 ¡H
+                <h2 style="color:#2E8B57;">🎉 ¡Has completado el quiz!</h2>
+                <h3 style="color:#1E90FF;">Tu puntuación final es: <strong>{st.session_state.score} puntos</strong></h3>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        if st.button("🔄 Reiniciar quiz"):
+            st.session_state.score = 0
+            st.session_state.q_index = 0
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.show_next_button = False
+        return
+
+    question = questions[q_index]
+
+    # Cuadro de pregunta
+    st.markdown(f'<div class="question-card">', unsafe_allow_html=True)
+    st.markdown(f'<h3 style="color:#333;">Pregunta {q_index + 1} de {len(questions)}</h3>', unsafe_allow_html=True)
+    st.markdown(f'<p style="font-weight:bold; color:#111; font-size:18px;">{question["question"]}</p>', unsafe_allow_html=True)
+
+    # Mostrar opciones y procesar respuesta
+    if not st.session_state.answered:
+        with st.form(key="quiz_form"):
+            selected = st.radio("", question["options"], key="radio")
+            submit = st.form_submit_button("Enviar respuesta")
+            if submit:
+                st.session_state.selected_option_idx = question["options"].index(selected)
+                st.session_state.answered = True
+                st.session_state.show_next_button = True
+
+                if st.session_state.selected_option_idx == question["answer"]:
+                    st.success("✅ ¡Correcto! Has ganado 10 puntos.")
+                    st.session_state.score += 10
+                else:
+                    st.error("❌ Respuesta incorrecta.")
+
+                st.markdown(
+                    f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
+                    unsafe_allow_html=True,
+                )
+    else:
+        # Mostrar solo respuestas, sin permitir cambiar
+        st.markdown(
+            f"<p><b>Tu respuesta:</b> {question['options'][st.session_state.selected_option_idx]}</p>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Botón para siguiente pregunta
+    if st.session_state.show_next_button:
+        if st.button("Siguiente pregunta", key="next_btn"):
+            st.session_state.q_index += 1
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.show_next_button = False
+
+# Ejecutar
+if __name__ == "__main__":
+    main()
