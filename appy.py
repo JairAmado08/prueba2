@@ -151,4 +151,68 @@ def main():
             """,
             unsafe_allow_html=True
         )
-        if st.button("🔄 Reini
+        if st.button("🔄 Reiniciar quiz"):
+            st.session_state.score = 0
+            st.session_state.q_index = 0
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.score_added = False
+        return
+
+    question = questions[q_index]
+
+    st.markdown(f'<div class="question-card">', unsafe_allow_html=True)
+    st.markdown(f'<h3 style="color:#333;">Pregunta {q_index + 1} de {len(questions)}</h3>', unsafe_allow_html=True)
+    st.markdown(f'<p style="font-weight:bold; color:#111; font-size:20px;">{question["question"]}</p>', unsafe_allow_html=True)
+
+    if not st.session_state.answered:
+        selected = st.radio(
+            label="",
+            options=question["options"],
+            key="radio",
+            index=0,
+            help="Selecciona una opción"
+        )
+        if st.button("Enviar respuesta"):
+            st.session_state.selected_option_idx = question["options"].index(selected)
+            st.session_state.answered = True
+    else:
+        selected = st.radio(
+            label="",
+            options=question["options"],
+            key="radio_disabled",
+            index=st.session_state.selected_option_idx,
+            disabled=True
+        )
+        if st.session_state.selected_option_idx == question["answer"]:
+            if not st.session_state.score_added:
+                st.session_state.score += 10
+                st.session_state.score_added = True
+            st.markdown(
+                f'<p class="message success-message">✅ ¡Correcto! Has ganado 10 puntos.</p>',
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f'<p class="message error-message">❌ Respuesta incorrecta.</p>',
+                unsafe_allow_html=True,
+            )
+        st.markdown(
+            f"<p><b>Tu respuesta:</b> {question['options'][st.session_state.selected_option_idx]}</p>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
+            unsafe_allow_html=True,
+        )
+
+        if st.button("Siguiente pregunta"):
+            st.session_state.q_index += 1
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.score_added = False
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
