@@ -48,13 +48,14 @@ def set_bg():
             background-attachment: fixed;
         }}
         .question-card {{
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9); /* Fondo blanco con 90% opacidad */
             padding: 25px 40px;
             border-radius: 15px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.5);
             max-width: 700px;
             margin: 30px auto 30px auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #111; /* Texto oscuro para buen contraste */
         }}
         .btn-next {{
             background-color: #4CAF50;
@@ -146,8 +147,8 @@ def main():
                 st.session_state.show_next_button = True
 
                 if st.session_state.selected_option_idx == question["answer"]:
-                    st.session_state.score += 10
                     st.success("✅ ¡Correcto! Has ganado 10 puntos.")
+                    st.session_state.score += 10
                 else:
                     st.error("❌ Respuesta incorrecta.")
 
