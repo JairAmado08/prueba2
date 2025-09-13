@@ -88,6 +88,12 @@ def set_bg():
         input[type="radio"]:disabled + label {{
             color: gray;
         }}
+        h1 {{
+            margin-top: 80px;
+            text-align:center;
+            color:#FFFAF0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -98,9 +104,7 @@ def main():
 
     st.markdown(
         """
-        <h1 style="text-align:center; color:#FFFAF0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-            📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD
-        </h1>
+        <h1>📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD</h1>
         <hr style="border: 2px solid #FFFAF0; border-radius: 5px; max-width: 700px; margin:auto;">
         """,
         unsafe_allow_html=True,
