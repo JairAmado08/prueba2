@@ -39,6 +39,7 @@ def set_bg():
     st.markdown(
         f"""
         <style>
+        /* Fondo */
         .stApp {{
             background-image: url("{BACKGROUND_IMAGE}");
             background-size: cover;
@@ -46,6 +47,21 @@ def set_bg():
             background-repeat: no-repeat;
             background-attachment: fixed;
         }}
+
+        /* Quitar padding superior del main container para poder controlar margen */
+        .main > div {{
+            padding-top: 0px !important;
+        }}
+
+        /* Estilo del título con margen top para bajar */
+        h1 {{
+            margin-top: 120px !important;
+            text-align:center;
+            color:#FFFAF0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }}
+
+        /* Tarjeta de intro */
         .intro-card {{
             background: rgba(255, 255, 255, 0.9);
             padding: 25px 40px;
@@ -58,6 +74,8 @@ def set_bg():
             text-align: justify;
             line-height: 1.5;
         }}
+
+        /* Tarjeta de pregunta */
         .question-card {{
             background: rgba(255, 255, 255, 0.95);
             padding: 30px 50px;
@@ -69,6 +87,8 @@ def set_bg():
             color: #111;
             text-align: center;
         }}
+
+        /* Mensajes */
         .message {{
             margin-top: 20px;
             font-size: 18px;
@@ -80,20 +100,19 @@ def set_bg():
         .error-message {{
             color: #B22222;
         }}
+
+        /* Para que el radio disabled se vea gris */
+        input[type="radio"]:disabled + label {{
+            color: gray;
+        }}
+
+        /* Quitar fondo blanco del bloque */
         .block-container {{
             background-color: transparent !important;
             padding-top: 0px !important;
             padding-bottom: 0px !important;
         }}
-        input[type="radio"]:disabled + label {{
-            color: gray;
-        }}
-        h1 {{
-            margin-top: 80px;
-            text-align:center;
-            color:#FFFAF0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }}
+
         </style>
         """,
         unsafe_allow_html=True,
