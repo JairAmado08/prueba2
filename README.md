@@ -9,9 +9,9 @@ Nos enfocamos en las licencias **MIT** y **BSD** para que puedas elegir la mejor
 
 Este proyecto busca informar y promover el uso de licencias que:
 
-- ✅ Son <span style="color:green">simples y claras</span>, facilitando su comprensión.
-- 🔓 Ofrecen <span style="color:blue">gran libertad</span> para usar, modificar y distribuir software.
-- 🌍 Son ampliamente <span style="color:orange">reconocidas y respetadas</span> en la comunidad.
+- ✅ Son simples y claras, facilitando su comprensión.
+- 🔓 Ofrecen gran libertad para usar, modificar y distribuir software.
+- 🌍 Son ampliamente reconocidas y respetadas en la comunidad.
 
 ---
 
@@ -41,22 +41,4 @@ Este proyecto busca informar y promover el uso de licencias que:
 ## 🔗 Recursos útiles
 
 - [Licencia MIT en opensource.org](https://opensource.org/licenses/MIT)  
-- [Licencias BSD en opensource.org](https://opensource.org/licenses/BSD-3-Clause)
-
----
-
-## 🤗 Cómo contribuir
-
-Si deseas aportar información, ejemplos o mejorar el contenido, ¡las contribuciones son bienvenidas!  
-Por favor, abre un *issue* o un *pull request*.
-
----
-
-## 📬 Contacto
-
-Puedes contactarme a través de [tu-email@ejemplo.com] o abrir un issue en este repositorio.
-
----
-
-🙏 ¡Gracias por visitar este proyecto sobre licencias flexibles y accesibles!
-
+- [Licencias BSD]()
