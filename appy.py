@@ -35,8 +35,6 @@ questions = [
     }
 ]
 
-TIME_LIMIT = 15  # segundos por pregunta
-
 def main():
     st.title("📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD")
 
@@ -44,8 +42,6 @@ def main():
         st.session_state.score = 0
     if "q_index" not in st.session_state:
         st.session_state.q_index = 0
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = time.time()
     if "answered" not in st.session_state:
         st.session_state.answered = False
     if "selected_option" not in st.session_state:
@@ -62,16 +58,7 @@ def main():
 
     question = questions[q_index]
 
-    elapsed = time.time() - st.session_state.start_time
-    remaining_time = TIME_LIMIT - int(elapsed)
-
-    if remaining_time <= 0 and not st.session_state.answered:
-        st.warning("⏰ Tiempo terminado para esta pregunta.")
-        st.session_state.answered = True
-        st.session_state.show_next_button = True
-
     st.write(f"Pregunta {q_index + 1} de {len(questions)}")
-    st.write(f"⏳ Tiempo restante: {max(0, remaining_time)} segundos")
 
     if not st.session_state.answered:
         with st.form(key="quiz_form"):
@@ -83,13 +70,9 @@ def main():
                 st.session_state.answered = True
                 st.session_state.show_next_button = True
 
-                time_taken = time.time() - st.session_state.start_time
-
                 if question["options"].index(selected) == question["answer"]:
-                    bonus = max(0, TIME_LIMIT - time_taken)
-                    gained = 10 + int(bonus)
-                    st.session_state.score += gained
-                    st.success(f"¡Correcto! Has ganado {gained} puntos.")
+                    st.session_state.score += 10
+                    st.success("¡Correcto! Has ganado 10 puntos.")
                 else:
                     st.error("Respuesta incorrecta.")
 
@@ -101,7 +84,6 @@ def main():
     if st.session_state.show_next_button:
         if st.button("Siguiente pregunta"):
             st.session_state.q_index += 1
-            st.session_state.start_time = time.time()
             st.session_state.answered = False
             st.session_state.selected_option = None
             st.session_state.show_next_button = False
