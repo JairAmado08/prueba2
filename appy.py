@@ -35,7 +35,6 @@ questions = [
     }
 ]
 
-# Constantes
 TIME_LIMIT = 15  # segundos por pregunta
 
 def main():
@@ -49,49 +48,14 @@ def main():
         st.session_state.start_time = time.time()
     if "answered" not in st.session_state:
         st.session_state.answered = False
+    if "selected_option" not in st.session_state:
+        st.session_state.selected_option = None
+    if "show_next_button" not in st.session_state:
+        st.session_state.show_next_button = False
 
-    q = questions[st.session_state.q_index]
-    elapsed = time.time() - st.session_state.start_time
-    remaining_time = max(0, TIME_LIMIT - int(elapsed))
+    q_index = st.session_state.q_index
 
-    st.write(f"Pregunta {st.session_state.q_index + 1} de {len(questions)}")
-    st.write(f"⏳ Tiempo restante: {remaining_time} segundos")
-
-    if remaining_time == 0 and not st.session_state.answered:
-        st.warning("Tiempo terminado. Pasando a la siguiente pregunta...")
-        st.session_state.q_index += 1
-        st.session_state.start_time = time.time()
-        st.session_state.answered = False
-        st.experimental_rerun()
-
-    if not st.session_state.answered:
-        option = st.radio(q["question"], q["options"], key=st.session_state.q_index)
-
-        if st.button("Enviar respuesta"):
-            st.session_state.answered = True
-            time_taken = time.time() - st.session_state.start_time
-
-            if q["options"].index(option) == q["answer"]:
-                # Puntuación: 10 puntos base + bonus según rapidez
-                bonus = max(0, TIME_LIMIT - time_taken)
-                st.session_state.score += 10 + int(bonus)
-                st.success(f"¡Correcto! Has ganado {10 + int(bonus)} puntos.")
-            else:
-                st.error("Respuesta incorrecta.")
-
-            st.write(f"Respuesta correcta: {q['options'][q['answer']]}")
-
-            if st.session_state.q_index + 1 < len(questions):
-                if st.button("Siguiente pregunta"):
-                    st.session_state.q_index += 1
-                    st.session_state.start_time = time.time()
-                    st.session_state.answered = False
-                    st.experimental_rerun()
-            else:
-                st.write("¡Has completado el quiz!")
-                st.write(f"Tu puntuación final es: **{st.session_state.score} puntos**")
-    else:
-        st.write("Por favor, pulsa 'Siguiente pregunta' para continuar.")
-
-if __name__ == "__main__":
-    main()
+    if q_index >= len(questions):
+        st.success("🎉 ¡Has completado el quiz!")
+        st.write(f"Tu puntuación final es: **{st.session_state.score} puntos**")
+        ret
