@@ -61,17 +61,6 @@ def set_bg():
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }}
 
-        /* Estilo del autor */
-        .author {{
-            text-align: center;
-            color: #ddd;
-            font-size: 14px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin-top: -10px;
-            margin-bottom: 30px;
-            font-style: italic;
-        }}
-
         /* Tarjeta de intro */
         .intro-card {{
             background: rgba(255, 255, 255, 0.9);
@@ -135,7 +124,6 @@ def main():
     st.markdown(
         """
         <h1>📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD</h1>
-        <p class="author">Autor: Jair Amado - Desarrollado en el curso de Software Libre</p>
         <hr style="border: 2px solid #FFFAF0; border-radius: 5px; max-width: 700px; margin:auto;">
         """,
         unsafe_allow_html=True,
@@ -254,3 +242,11 @@ def main():
 
         if st.button("Siguiente pregunta"):
             st.session_state.q_index += 1
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.score_added = False
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
