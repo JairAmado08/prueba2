@@ -42,4 +42,63 @@ def main():
         st.session_state.q_index = 0
     if "answered" not in st.session_state:
         st.session_state.answered = False
-    if "selected_option_idx" not in st.session_state:_
+    if "selected_option_idx" not in st.session_state:
+        st.session_state.selected_option_idx = None
+    if "show_next_button" not in st.session_state:
+        st.session_state.show_next_button = False
+
+    q_index = st.session_state.q_index
+
+    if q_index >= len(questions):
+        st.balloons()
+        st.markdown(
+            f"""
+            <h2 style="color:green;">🎉 ¡Has completado el quiz!</h2>
+            <h3 style="color:blue;">Tu puntuación final es: <strong>{st.session_state.score} puntos</strong></h3>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("Reiniciar quiz"):
+            st.session_state.score = 0
+            st.session_state.q_index = 0
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.show_next_button = False
+        return
+
+    question = questions[q_index]
+
+    st.write(f"Pregunta {q_index + 1} de {len(questions)}")
+
+    if not st.session_state.answered:
+        with st.form(key="quiz_form"):
+            selected = st.radio(question["question"], question["options"])
+            submit = st.form_submit_button("Enviar respuesta")
+
+            if submit:
+                st.session_state.selected_option_idx = question["options"].index(selected)
+                st.session_state.answered = True
+                st.session_state.show_next_button = True
+
+                if st.session_state.selected_option_idx == question["answer"]:
+                    st.session_state.score += 10
+                    st.success("¡Correcto! Has ganado 10 puntos.")
+                else:
+                    st.error("Respuesta incorrecta.")
+
+                st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+
+    else:
+        # Mostrar la respuesta elegida sin opción de cambiar
+        st.write(f"Tu respuesta: **{question['options'][st.session_state.selected_option_idx]}**")
+        st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+
+    if st.session_state.show_next_button:
+        if st.button("Siguiente pregunta"):
+            st.session_state.q_index += 1
+            st.session_state.answered = False
+            st.session_state.selected_option_idx = None
+            st.session_state.show_next_button = False
+
+if __name__ == "__main__":
+    main()
