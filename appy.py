@@ -1,6 +1,5 @@
 import streamlit as st
 
-# Imagen de fondo
 BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80"
 
 questions = [
@@ -47,30 +46,48 @@ def set_bg():
             background-repeat: no-repeat;
             background-attachment: fixed;
         }}
+        .intro-card {{
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px 40px;
+            border-radius: 20px;
+            max-width: 700px;
+            margin: 30px auto 20px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #111;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            text-align: justify;
+            line-height: 1.5;
+        }}
         .question-card {{
             background: rgba(255, 255, 255, 0.95);
             padding: 30px 50px;
             border-radius: 20px;
             box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.7);
             max-width: 700px;
-            margin: 40px auto 40px auto;
+            margin: 20px auto 40px auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #111;
             text-align: center;
         }}
-        .btn-next {{
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .message {{
             margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
         }}
-        .btn-next:hover {{
-            background-color: #45a049;
+        .success-message {{
+            color: #2E8B57;
+        }}
+        .error-message {{
+            color: #B22222;
+        }}
+        .block-container {{
+            background-color: transparent !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }}
+        /* Opciones radio deshabilitadas */
+        input[type="radio"]:disabled + label {{
+            color: gray;
         }}
         </style>
         """,
@@ -85,7 +102,27 @@ def main():
         <h1 style="text-align:center; color:#FFFAF0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD
         </h1>
-        <hr style="border: 2px solid #FFFAF0; border-radius: 5px;">
+        <hr style="border: 2px solid #FFFAF0; border-radius: 5px; max-width: 700px; margin:auto;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Bloque introductorio para preparar al usuario
+    st.markdown(
+        """
+        <div class="intro-card">
+            <h2 style="text-align:center; color:#333;">Prepárate para el Quiz</h2>
+            <p>
+                Las licencias MIT y BSD son licencias de software de código abierto muy populares y flexibles. 
+                Permiten a los desarrolladores usar, copiar, modificar y distribuir software con muy pocas restricciones, 
+                fomentando la colaboración y el uso libre del código. La licencia MIT es conocida por su simplicidad, 
+                mientras que BSD tiene varias variantes, algunas con cláusulas específicas que deben respetarse.
+            </p>
+            <p>
+                Este quiz te ayudará a comprender mejor las características principales de estas licencias y su importancia 
+                en el mundo del software abierto. ¡Buena suerte!
+            </p>
+        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -98,8 +135,8 @@ def main():
         st.session_state.answered = False
     if "selected_option_idx" not in st.session_state:
         st.session_state.selected_option_idx = None
-    if "show_next_button" not in st.session_state:
-        st.session_state.show_next_button = False
+    if "score_added" not in st.session_state:
+        st.session_state.score_added = False
 
     q_index = st.session_state.q_index
 
@@ -114,57 +151,4 @@ def main():
             """,
             unsafe_allow_html=True
         )
-        if st.button("🔄 Reiniciar quiz"):
-            st.session_state.score = 0
-            st.session_state.q_index = 0
-            st.session_state.answered = False
-            st.session_state.selected_option_idx = None
-            st.session_state.show_next_button = False
-        return
-
-    question = questions[q_index]
-
-    st.markdown(f'<div class="question-card">', unsafe_allow_html=True)
-    st.markdown(f'<h3 style="color:#333;">Pregunta {q_index + 1} de {len(questions)}</h3>', unsafe_allow_html=True)
-    st.markdown(f'<p style="font-weight:bold; color:#111; font-size:20px;">{question["question"]}</p>', unsafe_allow_html=True)
-
-    if not st.session_state.answered:
-        with st.form(key="quiz_form"):
-            selected = st.radio("", question["options"], key="radio")
-            submit = st.form_submit_button("Enviar respuesta")
-            if submit:
-                st.session_state.selected_option_idx = question["options"].index(selected)
-                st.session_state.answered = True
-                st.session_state.show_next_button = True
-
-                if st.session_state.selected_option_idx == question["answer"]:
-                    st.success("✅ ¡Correcto! Has ganado 10 puntos.")
-                    st.session_state.score += 10
-                else:
-                    st.error("❌ Respuesta incorrecta.")
-
-                st.markdown(
-                    f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
-                    unsafe_allow_html=True,
-                )
-    else:
-        st.markdown(
-            f"<p><b>Tu respuesta:</b> {question['options'][st.session_state.selected_option_idx]}</p>",
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    if st.session_state.show_next_button:
-        if st.button("Siguiente pregunta", key="next_btn"):
-            st.session_state.q_index += 1
-            st.session_state.answered = False
-            st.session_state.selected_option_idx = None
-            st.session_state.show_next_button = False
-
-if __name__ == "__main__":
-    main()
+        if st.button("🔄 Reini
