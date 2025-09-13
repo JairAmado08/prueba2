@@ -1,7 +1,5 @@
 import streamlit as st
-import time
 
-# Preguntas del quiz
 questions = [
     {
         "question": "¿Cuál es una característica principal de la licencia MIT?",
@@ -44,8 +42,8 @@ def main():
         st.session_state.q_index = 0
     if "answered" not in st.session_state:
         st.session_state.answered = False
-    if "selected_option" not in st.session_state:
-        st.session_state.selected_option = None
+    if "selected_option_idx" not in st.session_state:
+        st.session_state.selected_option_idx = None
     if "show_next_button" not in st.session_state:
         st.session_state.show_next_button = False
 
@@ -66,26 +64,28 @@ def main():
             submit = st.form_submit_button("Enviar respuesta")
 
             if submit:
-                st.session_state.selected_option = selected
+                st.session_state.selected_option_idx = question["options"].index(selected)
                 st.session_state.answered = True
                 st.session_state.show_next_button = True
 
-                if question["options"].index(selected) == question["answer"]:
+                if st.session_state.selected_option_idx == question["answer"]:
                     st.session_state.score += 10
                     st.success("¡Correcto! Has ganado 10 puntos.")
                 else:
                     st.error("Respuesta incorrecta.")
 
                 st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+
     else:
-        st.write(f"Tu respuesta: **{st.session_state.selected_option}**")
+        # Mostrar la respuesta elegida sin opción de cambiar
+        st.write(f"Tu respuesta: **{question['options'][st.session_state.selected_option_idx]}**")
         st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
 
     if st.session_state.show_next_button:
         if st.button("Siguiente pregunta"):
             st.session_state.q_index += 1
             st.session_state.answered = False
-            st.session_state.selected_option = None
+            st.session_state.selected_option_idx = None
             st.session_state.show_next_button = False
 
 if __name__ == "__main__":
