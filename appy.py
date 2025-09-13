@@ -1,62 +1,110 @@
 import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import time
 
-def plot_cubo(a):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+# Preguntas del quiz
+questions = [
+    {
+        "question": "¿Cuál es una característica principal de la licencia MIT?",
+        "options": [
+            "Permite usar, copiar y modificar sin muchas restricciones",
+            "No permite redistribución",
+            "Solo se usa para software privado",
+            "Tiene muchas cláusulas restrictivas"
+        ],
+        "answer": 0
+    },
+    {
+        "question": "¿Qué diferencia tiene la licencia BSD respecto a MIT?",
+        "options": [
+            "Es más restrictiva",
+            "No permite uso comercial",
+            "Tiene variantes con 2 o 3 cláusulas",
+            "Es solo para proyectos gubernamentales"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "¿Qué buscan las licencias MIT y BSD principalmente?",
+        "options": [
+            "Control total del autor sobre el software",
+            "Flexibilidad y accesibilidad para usar y modificar",
+            "Limitar la distribución a solo ciertos países",
+            "Garantizar que nadie use el código"
+        ],
+        "answer": 1
+    }
+]
 
-    points = np.array([
-        [0, 0, 0],
-        [a, 0, 0],
-        [a, a, 0],
-        [0, a, 0],
-        [0, 0, a],
-        [a, 0, a],
-        [a, a, a],
-        [0, a, a]
-    ])
+TIME_LIMIT = 15  # segundos por pregunta
 
-    faces = [
-        [points[j] for j in [0,1,2,3]],
-        [points[j] for j in [4,5,6,7]],
-        [points[j] for j in [0,1,5,4]],
-        [points[j] for j in [1,2,6,5]],
-        [points[j] for j in [2,3,7,6]],
-        [points[j] for j in [3,0,4,7]]
-    ]
+def main():
+    st.title("📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD")
 
-    cube = Poly3DCollection(faces, facecolors='cyan', edgecolors='blue', linewidths=1, alpha=0.5)
-    ax.add_collection3d(cube)
+    if "score" not in st.session_state:
+        st.session_state.score = 0
+    if "q_index" not in st.session_state:
+        st.session_state.q_index = 0
+    if "start_time" not in st.session_state:
+        st.session_state.start_time = time.time()
+    if "answered" not in st.session_state:
+        st.session_state.answered = False
+    if "selected_option" not in st.session_state:
+        st.session_state.selected_option = None
+    if "show_next_button" not in st.session_state:
+        st.session_state.show_next_button = False
 
-    ax.set_box_aspect([1,1,1])
-    ax.set_xlim(0, a)
-    ax.set_ylim(0, a)
-    ax.set_zlim(0, a)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.set_title("Cubo")
+    q_index = st.session_state.q_index
 
-    ax.grid(True)
-    ax.set_facecolor('white')
+    if q_index >= len(questions):
+        st.success("🎉 ¡Has completado el quiz!")
+        st.write(f"Tu puntuación final es: **{st.session_state.score} puntos**")
+        return
 
-    # Para asegurarnos que Streamlit lo renderice bien
-    plt.tight_layout()
+    question = questions[q_index]
 
-    return fig
+    elapsed = time.time() - st.session_state.start_time
+    remaining_time = TIME_LIMIT - int(elapsed)
 
-# --- Streamlit App ---
+    if remaining_time <= 0 and not st.session_state.answered:
+        st.warning("⏰ Tiempo terminado para esta pregunta.")
+        st.session_state.answered = True
+        st.session_state.show_next_button = True
 
-st.title("📐 Calculadora de Volumen de Figuras 3D")
+    st.write(f"Pregunta {q_index + 1} de {len(questions)}")
+    st.write(f"⏳ Tiempo restante: {max(0, remaining_time)} segundos")
 
-a = st.number_input("Ingrese la arista del cubo:", min_value=0.1, value=1.0, step=0.1)
+    if not st.session_state.answered:
+        with st.form(key="quiz_form"):
+            selected = st.radio(question["question"], question["options"])
+            submit = st.form_submit_button("Enviar respuesta")
 
-if st.button("Calcular y mostrar cubo"):
-    vol = a**3
-    st.success(f"Volumen del cubo: {vol:.4f} unidades cúbicas")
+            if submit:
+                st.session_state.selected_option = selected
+                st.session_state.answered = True
+                st.session_state.show_next_button = True
 
-    fig = plot_cubo(a)
-    st.pyplot(fig)
-    plt.close(fig)  # Cerramos la figura para liberar memoria
+                time_taken = time.time() - st.session_state.start_time
+
+                if question["options"].index(selected) == question["answer"]:
+                    bonus = max(0, TIME_LIMIT - time_taken)
+                    gained = 10 + int(bonus)
+                    st.session_state.score += gained
+                    st.success(f"¡Correcto! Has ganado {gained} puntos.")
+                else:
+                    st.error("Respuesta incorrecta.")
+
+                st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+    else:
+        st.write(f"Tu respuesta: **{st.session_state.selected_option}**")
+        st.write(f"Respuesta correcta: **{question['options'][question['answer']]}**")
+
+    if st.session_state.show_next_button:
+        if st.button("Siguiente pregunta"):
+            st.session_state.q_index += 1
+            st.session_state.start_time = time.time()
+            st.session_state.answered = False
+            st.session_state.selected_option = None
+            st.session_state.show_next_button = False
+
+if __name__ == "__main__":
+    main()
