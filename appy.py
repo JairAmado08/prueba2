@@ -1,6 +1,5 @@
 import streamlit as st
 
-# Imagen de fondo
 BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80"
 
 questions = [
@@ -53,24 +52,26 @@ def set_bg():
             border-radius: 20px;
             box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.7);
             max-width: 700px;
-            margin: 40px auto 40px auto;
+            margin: 20px auto 40px auto;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #111;
             text-align: center;
         }}
-        .btn-next {{
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .message {{
             margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
         }}
-        .btn-next:hover {{
-            background-color: #45a049;
+        .success-message {{
+            color: #2E8B57;
+        }}
+        .error-message {{
+            color: #B22222;
+        }}
+        .block-container {{
+            background-color: transparent !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
         }}
         </style>
         """,
@@ -85,7 +86,7 @@ def main():
         <h1 style="text-align:center; color:#FFFAF0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             📝 Quiz: Licencias Flexibles y Accesibles - MIT y BSD
         </h1>
-        <hr style="border: 2px solid #FFFAF0; border-radius: 5px;">
+        <hr style="border: 2px solid #FFFAF0; border-radius: 5px; max-width: 700px; margin:auto;">
         """,
         unsafe_allow_html=True,
     )
@@ -137,17 +138,20 @@ def main():
                 st.session_state.answered = True
                 st.session_state.show_next_button = True
 
-                if st.session_state.selected_option_idx == question["answer"]:
-                    st.success("✅ ¡Correcto! Has ganado 10 puntos.")
-                    st.session_state.score += 10
-                else:
-                    st.error("❌ Respuesta incorrecta.")
-
-                st.markdown(
-                    f"<p><b>Respuesta correcta:</b> {question['options'][question['answer']]}</p>",
-                    unsafe_allow_html=True,
-                )
     else:
+        if st.session_state.selected_option_idx == question["answer"]:
+            st.markdown(
+                f'<p class="message success-message">✅ ¡Correcto! Has ganado 10 puntos.</p>',
+                unsafe_allow_html=True,
+            )
+            st.session_state.score += 10 if not hasattr(st.session_state, "score_added") or not st.session_state.score_added else 0
+            st.session_state.score_added = True
+        else:
+            st.markdown(
+                f'<p class="message error-message">❌ Respuesta incorrecta.</p>',
+                unsafe_allow_html=True,
+            )
+
         st.markdown(
             f"<p><b>Tu respuesta:</b> {question['options'][st.session_state.selected_option_idx]}</p>",
             unsafe_allow_html=True,
@@ -165,6 +169,7 @@ def main():
             st.session_state.answered = False
             st.session_state.selected_option_idx = None
             st.session_state.show_next_button = False
+            st.session_state.score_added = False
 
 if __name__ == "__main__":
     main()
